@@ -12,28 +12,6 @@ import (
 	"github.com/orololuwa/reimagined-robot/handlers"
 )
 
-const portNumber = ":8080"
-
-func main(){
-	db, route, err := run()
-	if (err != nil){
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
-
-	srv := &http.Server{
-		Addr: portNumber,
-		Handler: route,
-	}
-
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 func run()(*sql.DB, *chi.Mux, error){
 	dbHost := "localhost"
 	dbPort := "5432"
@@ -64,3 +42,26 @@ func run()(*sql.DB, *chi.Mux, error){
 	router.Get("/user/{id}", handlers.Repo.GetAUser)
 	return db, router, nil
 }
+
+
+const portNumber = ":8080"
+func main(){
+	db, route, err := run()
+	if (err != nil){
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
+
+	srv := &http.Server{
+		Addr: portNumber,
+		Handler: route,
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+

@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
-	"github.com/go-chi/chi/v5"
 	"github.com/orololuwa/reimagined-robot/models"
 	"github.com/orololuwa/reimagined-robot/repository"
 )
@@ -78,13 +78,14 @@ func (m *Repository) CreateAUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusCreated)
 	w.Write(jsonResponse)
 }
 
 func (m *Repository) GetAUser(w http.ResponseWriter, r *http.Request){
-	id, err := strconv.Atoi(chi.URLParam(r, "id"))
-	if err != nil {
+		exploded := strings.Split(r.RequestURI, "/")
+		id, err := strconv.Atoi(exploded[2])
+		if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		responseMap := map[string]interface{}{"message": "error decoding id",}
@@ -101,7 +102,7 @@ func (m *Repository) GetAUser(w http.ResponseWriter, r *http.Request){
 	user, err := m.User.GetAUser(id)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
+		w.WriteHeader(http.StatusNotFound)
 		responseMap := map[string]interface{}{"message": "error getting user",}
 
 		jsonData, err := json.Marshal(responseMap)
